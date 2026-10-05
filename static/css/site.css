@@ -84,9 +84,10 @@ address { font-style: normal; }
 
 /* ---------- masthead */
 .masthead { border-bottom: 1px solid var(--line); background: var(--paper); position: sticky; top: 0; z-index: 5; }
-.masthead__inner { max-width: var(--wrap); margin: 0 auto; padding: 0.7rem var(--gutter); display: flex; align-items: center; gap: 1.5rem; }
+.masthead__inner { max-width: var(--wrap); margin: 0 auto; padding: 0.5rem var(--gutter); display: flex; align-items: center; gap: 1.5rem; }
 .brand { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; color: var(--navy); margin-right: auto; }
-.brand__mark { width: 30px; height: 40px; flex: none; }
+.brand__logo { display: block; flex: none; line-height: 0; }
+.brand__logo img { width: 120px; height: 68px; display: block; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand__short { font: 700 1.2rem/1 var(--sans); letter-spacing: 0.04em; }
 .brand__long { font: 400 0.78rem/1.25 var(--sans); color: var(--muted); max-width: 17rem; margin-top: 0.2rem; }
@@ -369,3 +370,8 @@ address { font-style: normal; }
 .people a { word-break: break-word; }
 
 a[href^="tel:"] { white-space: nowrap; }
+
+/* original NCCMN logo */
+.footer__logo { display: inline-block; background: #fff; padding: 0.6rem 0.8rem; border-radius: var(--radius); margin: 0 0 1rem; line-height: 0; }
+.footer__logo img { width: 127px; height: 72px; display: block; }
+@media (max-width: 30rem) { .brand__logo img { width: 92px; height: 52px; } }

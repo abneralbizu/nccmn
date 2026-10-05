@@ -20,8 +20,9 @@
 <meta property="og:image" content="{{ site_url }}/img/og.png">
 <meta property="og:locale" content="{{ 'es_US' if lang == 'es' else 'en_US' }}">
 <meta name="theme-color" content="#1B2A55">
-<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/img/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <link rel="preload" href="/fonts/literata-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/libre-franklin-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -34,7 +35,7 @@
 <header class="masthead">
   <div class="masthead__inner">
     <a class="brand" href="{{ url('home', lang) }}" aria-label="NCCMN, {{ org_name }}">
-      <img class="brand__mark" src="/img/mark.svg" alt="" width="30" height="40">
+      <picture class="brand__logo"><source type="image/webp" srcset="/img/nccmn-logo.webp"><img src="/img/nccmn-logo.png" alt="" width="120" height="68"></picture>
       <span class="brand__text">
         <span class="brand__short">NCCMN</span>
         <span class="brand__long">{{ org_name }}</span>
@@ -64,7 +65,8 @@
 <footer class="footer">
   <div class="footer__inner">
     <div class="footer__about">
-      <p class="footer__brand"><img src="/img/mark-light.svg" alt="" width="24" height="32"> {{ org_name }}</p>
+      <p class="footer__logo"><picture><source type="image/webp" srcset="/img/nccmn-logo-128.webp"><img src="/img/nccmn-logo-128.png" alt="National Christian Churches &amp; Ministries Network" width="127" height="72" loading="lazy"></picture></p>
+      <p class="footer__brand">{{ org_name }}</p>
       <p class="footer__tagline">{{ T.tagline }}</p>
       <p class="footer__legal">{{ T.footer_about }}</p>
     </div>
