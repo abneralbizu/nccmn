@@ -11,7 +11,8 @@ ORG = {
     "name_es": "Red Nacional de Iglesias y Ministerios Cristianos",
     "name_en": "National Christian Churches & Ministries Network",
     "short": "NCCMN",
-    "address": ["400 N New York Ave, Suite 105", "Winter Park, FL 32789"],
+    "address": ["1073 Willa Springs Drive, Suite 1005", "Winter Springs, FL 32708"],
+    "address_ny": ["276 Fifth Ave., Suite 704-265", "New York, NY 10001"],
     "phone": "407-759-9003",
     "phone_href": "+14077599003",
     "fax": "321-445-9900",
@@ -30,7 +31,7 @@ LEADERS = [
 ]
 
 # ------------------------------------------------------------------ map (home page)
-HQ = {"label": "Winter Park, FL", "lonlat": (-81.35, 28.60)}
+HQ = {"label": "Winter Springs, FL", "lonlat": (-81.28, 28.70)}
 MAP_PLACES = [
     {"label": "Rochester, NY", "lonlat": (-77.61, 43.16), "count": 1},
     {"label": "Hartford y Manchester, CT", "label_en": "Hartford & Manchester, CT", "lonlat": (-72.6, 41.77), "count": 2},
