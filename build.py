@@ -156,9 +156,19 @@ def main():
         sys.exit(1)
 
 
+LINK_ATTRS = r'(href|src|srcset|action)="([^"]*)"'
+
+
+def link_targets(attr, value):
+    """The URLs inside one attribute (srcset can hold several, separated by commas)."""
+    if attr == "srcset":
+        return [part.strip().split()[0] for part in value.split(",") if part.strip()]
+    return [value]
+
+
 def make_relative(dest_dir: Path):
     """Copy ./site to dest_dir with every root link (/x/) rewritten as a relative link,
-    so the site can be previewed from a sub-folder or opened straight from disk."""
+    so the site can be previewed from a sub-folder (GitHub Pages) or opened straight from disk."""
     import os
     import re
     if dest_dir.exists():
@@ -168,20 +178,50 @@ def make_relative(dest_dir: Path):
         rel = os.path.relpath(dest_dir, page.parent).replace(os.sep, "/")
         prefix = "" if rel == "." else rel + "/"
 
-        def fix(m):
-            attr, target = m.group(1), m.group(2)
-            if target.startswith("//"):
-                return m.group(0)
-            t = target.lstrip("/")
-            path, _, frag = t.partition("#")
+        def to_relative(url):
+            if not url.startswith("/") or url.startswith("//"):
+                return url
+            path, _, frag = url.lstrip("/").partition("#")
             if path == "" or path.endswith("/"):
-                path = path + "index.html"
-            return f'{attr}="{prefix}{path}{("#" + frag) if frag else ""}"'
-        html = re.sub(r'(href|src|action)="(/[^"]*)"', fix, page.read_text(encoding="utf-8"))
+                path += "index.html"
+            return prefix + path + ("#" + frag if frag else "")
+
+        def fix(m):
+            attr, value = m.group(1), m.group(2)
+            if attr == "srcset":
+                parts = []
+                for part in value.split(","):
+                    bits = part.strip().split()
+                    if bits:
+                        bits[0] = to_relative(bits[0])
+                        parts.append(" ".join(bits))
+                return f'{attr}="{", ".join(parts)}"'
+            return f'{attr}="{to_relative(value)}"'
+
+        html = re.sub(LINK_ATTRS, fix, page.read_text(encoding="utf-8"))
         # a preview copy must never compete with nccmn.org in search results
         if '<meta name="robots"' not in html:
             html = html.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex">', 1)
         page.write_text(html, encoding="utf-8")
+
+    # every relative link in the preview must reach a real file, and none may stay root-absolute
+    problems = []
+    for page in dest_dir.rglob("*.html"):
+        for attr, value in re.findall(LINK_ATTRS, page.read_text(encoding="utf-8")):
+            for url in link_targets(attr, value):
+                if url.startswith(("http:", "https:", "mailto:", "tel:", "data:", "#", "//")) or url == "":
+                    continue
+                if url.startswith("/"):
+                    problems.append(f"{page.relative_to(dest_dir)}: still root-absolute -> {url}")
+                    continue
+                target = (page.parent / url.split("#")[0].split("?")[0]).resolve()
+                if not target.exists():
+                    problems.append(f"{page.relative_to(dest_dir)}: missing -> {url}")
+    if problems:
+        print("Preview link problems:")
+        for p_ in sorted(set(problems))[:50]:
+            print("  ", p_)
+        sys.exit(1)
 
 
 def check_links():
@@ -189,12 +229,16 @@ def check_links():
     broken = []
     for page in OUT.rglob("*.html"):
         html = page.read_text(encoding="utf-8")
-        for href in re.findall(r'(?:href|src)="(/[^"#?]*)', html):
-            target = OUT / href.lstrip("/")
-            if href.endswith("/"):
-                target = target / "index.html"
-            if not target.exists():
-                broken.append(f"{page.relative_to(OUT)} -> {href}")
+        for attr, value in re.findall(LINK_ATTRS, html):
+            for href in link_targets(attr, value):
+                if not href.startswith("/") or href.startswith("//"):
+                    continue
+                href = href.split("#")[0].split("?")[0]
+                target = OUT / href.lstrip("/")
+                if href.endswith("/"):
+                    target = target / "index.html"
+                if not target.exists():
+                    broken.append(f"{page.relative_to(OUT)} -> {href}")
     return sorted(set(broken))
 
 
